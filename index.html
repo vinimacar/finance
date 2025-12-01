@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeonFinance - Controle Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="glass-header">
+        <div class="logo">
+          <span class="neon-text">Neon</span>Finance
+        </div>
+        <nav>
+          <button id="theme-toggle" class="icon-btn">🌙</button>
+        </nav>
+      </header>
+
+      <main>
+        <section id="dashboard" class="dashboard-grid">
+          <!-- Balance Card -->
+          <div class="card glass-card balance-card">
+            <h3>Saldo Total</h3>
+            <h1 id="total-balance" class="neon-text-green">R$ 0,00</h1>
+            <div class="balance-details">
+              <div class="income">
+                <span>Receitas</span>
+                <p id="total-income" class="text-green">+ R$ 0,00</p>
+              </div>
+              <div class="expense">
+                <span>Despesas</span>
+                <p id="total-expense" class="text-red">- R$ 0,00</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Tips -->
+          <div class="card glass-card tips-card">
+            <h3>💡 Dica Inteligente</h3>
+            <p id="smart-tip">Analise seus gastos para receber dicas personalizadas.</p>
+          </div>
+
+          <!-- Charts -->
+          <div class="card glass-card chart-card">
+            <canvas id="expenseChart"></canvas>
+          </div>
+
+          <!-- Transactions -->
+          <div class="card glass-card transactions-card">
+            <div class="card-header">
+              <h3>Últimas Transações</h3>
+              <button id="add-btn" class="neon-btn">+ Nova</button>
+            </div>
+            <ul id="transaction-list" class="transaction-list">
+              <!-- Items will be injected here -->
+            </ul>
+          </div>
+        </section>
+      </main>
+
+      <!-- Modal for New Transaction -->
+      <div id="transaction-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+          <span id="close-modal" class="close">&times;</span>
+          <h2>Nova Transação</h2>
+          <form id="transaction-form">
+            <div class="form-group">
+              <label>Tipo</label>
+              <div class="radio-group">
+                <label><input type="radio" name="type" value="income" checked> Receita</label>
+                <label><input type="radio" name="type" value="expense"> Despesa</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Descrição</label>
+              <input type="text" id="desc" required placeholder="Ex: Salário, Mercado">
+            </div>
+            <div class="form-group">
+              <label>Valor (R$)</label>
+              <input type="number" id="amount" step="0.01" required placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select id="category">
+                <option value="salary">Salário</option>
+                <option value="food">Alimentação</option>
+                <option value="transport">Transporte</option>
+                <option value="leisure">Lazer</option>
+                <option value="bills">Contas</option>
+                <option value="investment">Investimento</option>
+                <option value="other">Outros</option>
+              </select>
+            </div>
+            <button type="submit" class="neon-btn full-width">Salvar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
