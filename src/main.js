@@ -1,8 +1,10 @@
 import { calculateBalance, generateSmartTip } from './finance.js';
 import { renderBalance, renderTransactions, renderChart, renderEvolutionChart, renderStats, setupModal } from './ui.js';
 import { addTransactionToFirebase, getTransactionsFromFirebase } from './firebase-service.js';
+import { loginWithGoogle, logout, onAuthChange } from './auth.js';
 
 let transactions = [];
+let currentUser = null;
 
 const updateUI = () => {
   const balance = calculateBalance(transactions);
@@ -17,6 +19,8 @@ const updateUI = () => {
 };
 
 const addTransaction = async (transaction) => {
+  if (!currentUser) return;
+
   // Optimistic update
   const tempId = Date.now();
   const tempTransaction = { ...transaction, id: tempId };
@@ -24,7 +28,7 @@ const addTransaction = async (transaction) => {
   updateUI();
 
   try {
-    const savedTransaction = await addTransactionToFirebase(transaction);
+    const savedTransaction = await addTransactionToFirebase(transaction, currentUser.uid);
     // Replace temp transaction with real one (optional, or just reload)
     const index = transactions.findIndex(t => t.id === tempId);
     if (index !== -1) {
@@ -40,34 +44,64 @@ const addTransaction = async (transaction) => {
 };
 
 const init = async () => {
-  setupModal(addTransaction);
+  // Setup login button
+  const loginBtn = document.getElementById('google-login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const loginScreen = document.getElementById('login-screen');
+  const mainApp = document.getElementById('main-app');
 
-  // Theme toggle
-  const themeBtn = document.getElementById('theme-toggle');
-  themeBtn.onclick = () => {
-    document.body.classList.toggle('light-mode');
+  loginBtn.onclick = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      alert('Erro ao fazer login. Tente novamente.');
+    }
   };
 
-  // Load data
-  try {
-    const firebaseTransactions = await getTransactionsFromFirebase();
-    if (firebaseTransactions.length > 0) {
-      transactions = firebaseTransactions;
+  logoutBtn.onclick = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      alert('Erro ao fazer logout.');
+    }
+  };
+
+  // Listen for auth state changes
+  onAuthChange(async (user) => {
+    if (user) {
+      currentUser = user;
+      loginScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+
+      // Update user name
+      document.getElementById('user-name').textContent = user.displayName || user.email;
+
+      // Setup app
+      setupModal(addTransaction);
+
+      // Theme toggle
+      const themeBtn = document.getElementById('theme-toggle');
+      themeBtn.onclick = () => {
+        document.body.classList.toggle('light-mode');
+      };
+
+      // Load user's data
+      try {
+        const firebaseTransactions = await getTransactionsFromFirebase(user.uid);
+        transactions = firebaseTransactions;
+        updateUI();
+      } catch (error) {
+        console.error("Failed to load transactions", error);
+        transactions = [];
+        updateUI();
+      }
     } else {
-      // Keep empty or use mock if needed, but better to start clean
+      currentUser = null;
+      loginScreen.classList.remove('hidden');
+      mainApp.classList.add('hidden');
       transactions = [];
     }
-    updateUI();
-  } catch (error) {
-    console.error("Failed to load transactions", error);
-    // Fallback to mock data for demo purposes if firebase fails (e.g. no credentials)
-    transactions = [
-      { id: 1, type: 'income', description: 'Demo Salário', amount: 5000, category: 'salary', date: new Date().toISOString() },
-      { id: 2, type: 'expense', description: 'Demo Aluguel', amount: 1500, category: 'bills', date: new Date().toISOString() }
-    ];
-    updateUI();
-    alert("Modo Demo: Configure o Firebase em src/firebase-config.js para salvar dados reais.");
-  }
+  });
 };
 
 init();

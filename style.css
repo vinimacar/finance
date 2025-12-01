@@ -42,31 +42,15 @@ h3 {
   text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
 
-.neon-text-green {
-  color: var(--neon-green);
-  text-shadow: 0 0 10px rgba(10, 255, 0, 0.5);
-}
-
-.text-green {
-  color: var(--neon-green);
-}
-
-.text-red {
-  color: var(--neon-red);
-}
-
-/* Header */
-.glass-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: rgba(5, 5, 16, 0.7);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--glass-border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+justify-content: space-between;
+align-items: center;
+padding: 1rem 2rem;
+background: rgba(5, 5, 16, 0.7);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--glass-border);
+position: sticky;
+top: 0;
+z-index: 100;
 }
 
 .logo {
