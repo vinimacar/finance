@@ -1,4 +1,3 @@
-```javascript
 import { calculateBalance, generateSmartTip } from './finance.js';
 import { renderBalance, renderTransactions, renderChart, renderEvolutionChart, renderStats, setupModal } from './ui.js';
 import { addTransactionToFirebase, getTransactionsFromFirebase } from './firebase-service.js';
@@ -12,7 +11,7 @@ const updateUI = () => {
   renderChart(transactions);
   renderEvolutionChart(transactions);
   renderStats(transactions);
-  
+
   const tip = generateSmartTip(transactions);
   document.getElementById('smart-tip').textContent = tip;
 };
