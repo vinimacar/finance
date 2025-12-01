@@ -1,4 +1,5 @@
-import Chart from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 export const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', {
