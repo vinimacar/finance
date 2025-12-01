@@ -39,3 +39,38 @@ export const generateSmartTip = (transactions) => {
 
     return "💡 Mantenha o foco! Economizar regularmente é a chave para a liberdade financeira.";
 };
+
+export const getMonthlyEvolution = (transactions) => {
+    const evolution = {};
+
+    // Sort by date ascending
+    const sorted = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sorted.forEach(t => {
+        const date = new Date(t.date);
+        const key = `${date.getMonth() + 1}/${date.getFullYear()}`; // MM/YYYY
+
+        if (!evolution[key]) {
+            evolution[key] = { income: 0, expense: 0, balance: 0 };
+        }
+
+        if (t.type === 'income') evolution[key].income += t.amount;
+        if (t.type === 'expense') evolution[key].expense += t.amount;
+        evolution[key].balance = evolution[key].income - evolution[key].expense;
+    });
+
+    return evolution;
+};
+
+export const getBiggestExpense = (transactions) => {
+    const expenses = transactions.filter(t => t.type === 'expense');
+    if (expenses.length === 0) return null;
+
+    return expenses.reduce((max, t) => t.amount > max.amount ? t : max, expenses[0]);
+};
+
+export const getSavingsRate = (transactions) => {
+    const { income, expense } = calculateBalance(transactions);
+    if (income === 0) return 0;
+    return Math.round(((income - expense) / income) * 100);
+};

@@ -120,3 +120,95 @@ export const setupModal = (onSave) => {
         }
     };
 };
+
+let evolutionChartInstance = null;
+
+export const renderEvolutionChart = (transactions) => {
+    const ctx = document.getElementById('evolutionChart')?.getContext('2d');
+    if (!ctx) return;
+
+    const evolution = {};
+    const sorted = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sorted.forEach(t => {
+        const date = new Date(t.date);
+        const key = `${date.getDate()}/${date.getMonth() + 1}`;
+
+        if (!evolution[key]) {
+            evolution[key] = { income: 0, expense: 0 };
+        }
+
+        if (t.type === 'income') evolution[key].income += t.amount;
+        if (t.type === 'expense') evolution[key].expense += t.amount;
+    });
+
+    const labels = Object.keys(evolution);
+    const incomeData = Object.values(evolution).map(v => v.income);
+    const expenseData = Object.values(evolution).map(v => v.expense);
+
+    if (evolutionChartInstance) {
+        evolutionChartInstance.destroy();
+    }
+
+    evolutionChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Receitas',
+                    data: incomeData,
+                    borderColor: '#0aff00',
+                    backgroundColor: 'rgba(10, 255, 0, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Despesas',
+                    data: expenseData,
+                    borderColor: '#ff0055',
+                    backgroundColor: 'rgba(255, 0, 85, 0.1)',
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#ffffff' }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: { color: '#ffffff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#ffffff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+};
+
+export const renderStats = (transactions) => {
+    // Biggest expense
+    const expenses = transactions.filter(t => t.type === 'expense');
+    if (expenses.length > 0) {
+        const biggest = expenses.reduce((max, t) => t.amount > max.amount ? t : max, expenses[0]);
+        document.getElementById('biggest-expense').textContent = formatCurrency(biggest.amount);
+        document.getElementById('biggest-expense-desc').textContent = biggest.description;
+    } else {
+        document.getElementById('biggest-expense').textContent = 'R$ 0,00';
+        document.getElementById('biggest-expense-desc').textContent = '-';
+    }
+
+    // Savings rate
+    const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    const rate = income > 0 ? Math.round(((income - expense) / income) * 100) : 0;
+    document.getElementById('savings-rate').textContent = `${rate}%`;
+};
+

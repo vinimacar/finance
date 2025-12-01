@@ -49,9 +49,28 @@
           <p id="smart-tip">Analise seus gastos para receber dicas personalizadas.</p>
         </div>
 
+        <!-- Stats Cards (New) -->
+        <div class="card glass-card stat-card">
+          <h3>Maior Despesa</h3>
+          <p id="biggest-expense" class="text-red">R$ 0,00</p>
+          <span id="biggest-expense-desc" class="small-text">-</span>
+        </div>
+
+        <div class="card glass-card stat-card">
+          <h3>Taxa de Economia</h3>
+          <p id="savings-rate" class="neon-text">0%</p>
+        </div>
+
         <!-- Charts -->
         <div class="card glass-card chart-card">
+          <h3>Despesas por Categoria</h3>
           <canvas id="expenseChart"></canvas>
+        </div>
+
+        <!-- Evolution Chart (New) -->
+        <div class="card glass-card evolution-card">
+          <h3>Evolução Financeira</h3>
+          <canvas id="evolutionChart"></canvas>
         </div>
 
         <!-- Transactions -->

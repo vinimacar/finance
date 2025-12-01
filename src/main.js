@@ -1,5 +1,6 @@
+```javascript
 import { calculateBalance, generateSmartTip } from './finance.js';
-import { renderBalance, renderTransactions, renderChart, setupModal } from './ui.js';
+import { renderBalance, renderTransactions, renderChart, renderEvolutionChart, renderStats, setupModal } from './ui.js';
 import { addTransactionToFirebase, getTransactionsFromFirebase } from './firebase-service.js';
 
 let transactions = [];
@@ -9,7 +10,9 @@ const updateUI = () => {
   renderBalance(balance);
   renderTransactions(transactions);
   renderChart(transactions);
-
+  renderEvolutionChart(transactions);
+  renderStats(transactions);
+  
   const tip = generateSmartTip(transactions);
   document.getElementById('smart-tip').textContent = tip;
 };
